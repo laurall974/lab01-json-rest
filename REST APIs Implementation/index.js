@@ -16,6 +16,7 @@ var filmManager = require(path.join(__dirname, 'components/FilmManager'));
 var userController = require(path.join(__dirname, 'controllers/UsersController'));
 var filmController = require(path.join(__dirname, 'controllers/FilmsController'));
 var reviewController = require(path.join(__dirname, 'controllers/ReviewsController'));
+var imageController = require(path.join(__dirname, 'controllers/ImagesController'));
 var utils = require(path.join(__dirname, 'utils/writer.js'));
 
 /** Set up and enable Cross-Origin Resource Sharing (CORS) **/
@@ -52,6 +53,7 @@ if(req.isAuthenticated()) {
 var filmSchema = JSON.parse(fs.readFileSync(path.join('.', 'json_schemas', 'film_schema.json')).toString());
 var userSchema = JSON.parse(fs.readFileSync(path.join('.', 'json_schemas', 'user_schema.json')).toString());
 var reviewSchema = JSON.parse(fs.readFileSync(path.join('.', 'json_schemas', 'review_schema.json')).toString());
+
 var validator = new Validator({ allErrors: true });
 validator.ajv.addSchema([userSchema, filmSchema, reviewSchema]);
 const addFormats = require('ajv-formats').default;
@@ -102,6 +104,11 @@ app.get('/api/users', isLoggedIn, userController.getUsers);
 app.post('/api/users/authenticator', userController.authenticateUser);
 app.get('/api/users/:userId', isLoggedIn, userController.getSingleUser);
 app.get('/api/films/private', isLoggedIn, filmController.getPrivateFilms);
+
+app.post('/api/films/public/:filmId/images', isLoggedIn, imageController.uploadImage);
+app.get('/api/films/public/:filmId/images', isLoggedIn, imageController.listAllImagesByFilmId);
+app.get('/api/films/public/:filmId/images/:imageId', isLoggedIn, imageController.getSingleImage);
+app.delete('/api/films/public/:filmId/images/:imageId', isLoggedIn, imageController.deleteSingleImage);
 
 // Error handlers for validation and authentication errors
 
