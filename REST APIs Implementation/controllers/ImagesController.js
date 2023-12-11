@@ -3,6 +3,7 @@
 var utils = require('../utils/writer.js');
 var ImageService = require('../service/ImagesService.js');
 var constants = require('../utils/constants.js');
+
 /*** Upload an image file ***/
 
 var multer = require('multer');
@@ -81,11 +82,13 @@ module.exports.listAllImagesByFilmId = function listAllImagesByFilmId (req, res,
 
 };
 
-
 module.exports.getSingleImage = function getSingleImage (req, res, next) {
-    ImageService.getSingleImage(req.params.filmId, req.user.id, req.params.imageId)
-    .then(function(response) {
-        utils.writeJson(res, response);
+    const acceptHeader = req.get('Accept')
+    const [, imageFormat] = acceptHeader.split('/');
+
+    ImageService.getSingleImage(req.user.id, req.params.filmId, req.params.imageId,imageFormat)
+    .then(function(filePath) {
+        res.download(filePath);
     })
     .catch(function(response) {
         if(response == 403){
