@@ -172,14 +172,15 @@ const client = new converter.Converter('localhost:50051', grpc.credentials.creat
 
 //         // Send metadata (file type information)
 //         call.write({
-//             meta: {
-//             fileTypeOrigin: originType,
-//             fileTypeTarget: targetFormat,
+//             "meta": {
+//             "fileTypeOrigin": originType,
+//             "fileTypeTarget": targetFormat,
 //             },
 //         });
 
 //         // Send the file content to the server
 //         call.write({ file: fileContent });
+// send it into chunks
 
 //         // Close the request stream
 //         call.end();
