@@ -251,7 +251,32 @@ function convertImage(pathOriginFile, pathTargetFile, originType, targetType) {
 /**
 
  **/
- exports.deleteSingleImage = function() {
+ exports.deleteSingleImage = function(owner, imageId) {
+    return new Promise((resolve, reject) => {
+        const sql1 = "SELECT * FROM images i WHERE i.imageId = ? ";
+        db.all(sql1, [imageId], (err, rows) => {
+            if (err)
+                reject(err);
+            else if (rows.length === 0)
+                reject(404);
+            else if(owner != rows[0].uploaderId) {
+                reject(403);
+            }
+            else {
+                const sql3 = 'DELETE FROM images WHERE imageId = ?';
+                db.run(sql3, [imageId], (err) => {
+                    if (err)
+                         reject(err);
+                     else
+                        resolve(null);
+                })
+                if (fs.existsSync(rows[0].url)){
+                    fs.unlinkSync(rows[0].url);
+                    console.log("Delete File successfully.");
+                }
+            }
+        });
+    });
    
     
 }

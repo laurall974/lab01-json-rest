@@ -105,6 +105,21 @@ module.exports.getSingleImage = function getSingleImage (req, res, next) {
 };
 
 module.exports.deleteSingleImage = function deleteSingleImage (req, res, next) {
+    ImageService.deleteSingleImage( req.user.id, req.params.imageId)
+    .then(function(response) {
+        utils.writeJson(res, response, 204);
+    })
+    .catch(function(response) {
+        if(response == 403){
+            utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The user is not the owner of the film' }], }, 403);
+        }
+        else if (response == 404){
+            utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The film does not exist.' }], }, 404);
+        }
+        else {
+            utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': response }], }, 500);
+        }
+    });
 
 };
 
